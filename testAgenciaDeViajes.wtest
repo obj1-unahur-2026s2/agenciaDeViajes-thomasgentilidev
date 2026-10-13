@@ -1,0 +1,48 @@
+import agenciaDeViajes.*
+
+describe "test sugeridos 1" {
+  test "pack nacional sin beneficios devuelve precio base" 
+  {
+    const packNacional1 = new PacksNacionales(provinciaDeDestino = "Cordoba", duracionEnDias = 12, precioBase = 30)
+    assert.equals(30, packNacional1.valorFinal())
+  }
+
+  test "pack Nacional con 2 beneficios vigentes devuelve sus costos al base"
+  { 
+    const packNacional2 = new PacksNacionales(provinciaDeDestino = "Cordoba", duracionEnDias = 1, precioBase = 10)
+    const beneficio1 = new BeneficiosEspeciales(tipoDeBeneficio = "Chofer privado", costo = 12, estaVigente = true)
+    const beneficio2 = new BeneficiosEspeciales(tipoDeBeneficio = "Aire acondicionado", costo = 12, estaVigente = true)
+    packNacional2.aniadirBeneficio(beneficio1)
+    packNacional2.aniadirBeneficio(beneficio2)
+    assert.equals(34, packNacional2.valorFinal())
+
+  }
+
+  test "Un pack internacional sin beneficios vigentes calcula correctamente el total con el 20% de recargo."
+  {
+    const packInternacional1 = new PacksInternacionales(paisDestino = "Guatemala", cantidadDeEscalas = 3, esLugarDeInteres = true, duracionEnDias = 1, precioBase = 20)
+
+    assert.equals(24, packInternacional1.valorFinal())
+  }
+
+  test "Un guía motivado con 21 viajes realizados es considerado altamente calificado."
+  {
+    const guia1 = new Cordinador(cantidadDeViajes = 21 , estaMotivado = true, aniosDeExperiencia = 12)
+    assert.that(guia1.estaAltamenteCapacitado())
+  }
+
+  test "Un asistente logístico con menos de 3 años de experiencia no es calificado, aunque tenga muchos viajes."
+  {
+    const asistente1 = new Cordinador(cantidadDeViajes = 12, estaMotivado = false, aniosDeExperiencia = 1)
+    asistente1.cambiarDeRol(asistenteLogistico)
+    assert.notThat((asistente1.estaAltamenteCapacitado()))
+  }
+
+  test "Un acompañante con cualquier cantidad de viajes es siempre calificado si supera los 20."
+  {
+    const acompaniante1 = new Cordinador(cantidadDeViajes = 22, estaMotivado = true, aniosDeExperiencia = 20)
+    acompaniante1.cambiarDeRol(acompaniante)
+    assert.that(acompaniante1.estaAltamenteCapacitado())
+  }
+
+}

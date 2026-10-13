@@ -1,34 +1,49 @@
 class PacksDeViajes
 {   
     const beneficios = []
-    method duracionEnDias() = 0
-    method precioBase() = 0
-    method cordinadorACargo() = 0
+    const duracionEnDias 
+    const precioBase 
+    const cordinadorACargo = ninguno
 
     method packEsPremium()
 
-    method valorFinal() = 
-    (self.precioBase() + beneficios.sum({p => p.costo()}))
+    method precioBase() = precioBase
 
+    method valorFinal() = (precioBase + beneficios.sum({p => p.costo()}))
+
+    method aniadirBeneficio(unBeneficio)
+    {
+        beneficios.add(unBeneficio)
+    }
 }
 
 class PacksNacionales inherits PacksDeViajes
 {
     const actividadesIncluidas = []
-    method provinciaDeDestino()
-
-    override method valorFinal() = super() + super() * 0.2
+    const provinciaDeDestino 
 
     override method packEsPremium() =
-    
+    duracionEnDias > 10
+    &&
+    cordinadorACargo.estaAltamenteCapacitado()
+
 
 }
 
 class PacksInternacionales inherits PacksDeViajes
 {
-    method paisDestino()
-    method cantidadDeEscalas()
-    method esLugarDeInteres()
+    const paisDestino
+    const cantidadDeEscalas 
+    const esLugarDeInteres // booleano
+
+    override method packEsPremium() =
+    esLugarDeInteres
+    &&
+    duracionEnDias > 20
+    &&
+    cantidadDeEscalas == 0
+
+    override method valorFinal() = super() + super() * 0.2
 
 }
 
@@ -36,10 +51,12 @@ class Cordinador
 {
     var rol = guia
     const roles = [guia , asistenteLogistico, acompaniante]
+    const cantidadDeViajes
+    const estaMotivado //booleano
+    const aniosDeExperiencia
 
-    method cantidadDeViajes()
-    method estaMotivado()
-    method aniosDeExperiencia()
+    method estaMotivado() = estaMotivado
+    method aniosDeExperiencia() = aniosDeExperiencia 
 
     method cambiarDeRol(unRol)
     {
@@ -54,22 +71,37 @@ class Cordinador
     }
 
     method estaAltamenteCapacitado() =
-    self.cantidadDeViajes() > 20 &&
+    cantidadDeViajes > 20 
+    &&
     rol.cumpleElRequisito(self)
 }
 
 class BeneficiosEspeciales
 {
- method tipoDeBeneficio()
- method costo()
- method estaVigente()   
+ const tipoDeBeneficio
+ const costo 
+ const estaVigente   
+
+ method costo() = costo
 
 }
 
 class PacksProvinciales inherits PacksNacionales
 {
+    const cantidadDeCiudadesAVisitar = 0
 
+    override method packEsPremium() =
+    actividadesIncluidas.size() >= 4
+    &&
+    cantidadDeCiudadesAVisitar > 5
+    &&
+    beneficios.filter({p => p.estaVigente(true)}).size() >= 3
 
+    override method valorFinal() = 
+    if (self.packEsPremium()) super() + super() * 0.05
+    else super()
+
+    
 }
 
 
@@ -87,5 +119,7 @@ object asistenteLogistico
 
 object acompaniante
 {
-    method cumpleElRequisito() = true
+    method cumpleElRequisito(unGuia) = true
 }
+
+object ninguno{}
